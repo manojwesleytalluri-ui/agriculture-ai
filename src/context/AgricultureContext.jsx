@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_CAMERAS } from '../data/mockCameras';
 import { CROP_DATABASE, NUTRIENT_DEFICIENCIES } from '../data/mockCrops';
 import { MOCK_WEATHER } from '../data/mockWeather';
@@ -14,15 +14,71 @@ export const AgricultureProvider = ({ children }) => {
   const [theme, setTheme] = useState('dark');
   const [weather, setWeather] = useState(MOCK_WEATHER);
 
+  // Irrigation Pump & Sensor Real-Time State (Matches User Mockup)
+  const [pumpStatus, setPumpStatus] = useState('OFF');
+  const [pumpLastUpdated, setPumpLastUpdated] = useState('11:06:00 AM');
+  const [isFungicideModalOpen, setIsFungicideModalOpen] = useState(false);
+
+  // Sensor Gauge Data
+  const [sensorData, setSensorData] = useState({
+    soilMoisture: { value: 35, unit: '%', status: 'Low', min: 0, max: 150, color: '#D93829' },
+    airTemperature: { value: 29, unit: '°C', status: 'Optimal', min: 0, max: 150, color: '#2D7D32' },
+    airHumidity: { value: 70, unit: '%', status: 'High', min: 0, max: 100, color: '#6E5031' }
+  });
+
+  // Dynamic Live Time Clock
+  const [currentTime, setCurrentTime] = useState('11:06 AM');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const formatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setCurrentTime(formatted);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handlePumpControl = (command) => {
+    setPumpStatus(command);
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setPumpLastUpdated(formattedTime);
+
+    // If pump turned ON, gradually increase soil moisture after a short delay
+    if (command === 'ON') {
+      setTimeout(() => {
+        setSensorData((prev) => ({
+          ...prev,
+          soilMoisture: { ...prev.soilMoisture, value: 55, status: 'Optimal', color: '#2D7D32' }
+        }));
+      }, 3000);
+    } else {
+      setSensorData((prev) => ({
+        ...prev,
+        soilMoisture: { ...prev.soilMoisture, value: 35, status: 'Low', color: '#D93829' }
+      }));
+    }
+  };
+
   // Scanning & AI State
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(null);
   const [latestScanResult, setLatestScanResult] = useState(null);
 
-  // Alert Center State - Starts Empty
-  const [alerts, setAlerts] = useState([]);
+  // Alert Center State
+  const [alerts, setAlerts] = useState([
+    {
+      id: 'ALT-1',
+      title: 'Leaf Spot Detected',
+      crop: 'Tomato / Crop Field 1',
+      severity: 'WARNING',
+      recommendation: 'Apply Copper Fungicide',
+      status: 'Active',
+      timestamp: '11:06 AM'
+    }
+  ]);
 
-  // Task Planner State - Starts Empty
+  // Task Planner State
   const [tasks, setTasks] = useState([]);
 
   const selectedCamera =
@@ -48,19 +104,16 @@ export const AgricultureProvider = ({ children }) => {
       }
     };
 
-  // Toggle Theme
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Toggle Task Completion
   const toggleTask = (taskId) => {
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t))
     );
   };
 
-  // Add Task
   const addTask = (newTask) => {
     setTasks((prev) => [
       { id: `TSK-${Date.now()}`, completed: false, recommendedByAi: false, ...newTask },
@@ -68,14 +121,12 @@ export const AgricultureProvider = ({ children }) => {
     ]);
   };
 
-  // Resolve Alert
   const resolveAlert = (alertId) => {
     setAlerts((prev) =>
       prev.map((a) => (a.id === alertId ? { ...a, status: 'Resolved' } : a))
     );
   };
 
-  // Trigger Immediate Snapshot & AI Scan Simulator
   const triggerManualScan = async (cameraIdToScan) => {
     const targetCam = cameras.find((c) => c.id === (cameraIdToScan || selectedCameraId)) || cameras[0];
     if (!targetCam || !targetCam.id) return;
@@ -112,7 +163,6 @@ export const AgricultureProvider = ({ children }) => {
     setScanProgress(null);
   };
 
-  // Calculate Farm Overview Stats
   const totalCameras = cameras.length;
   const onlineCameras = cameras.filter((c) => c.status === 'Online' || c.status === 'Alert').length;
   const avgHealthScore = cameras.length > 0
@@ -149,6 +199,14 @@ export const AgricultureProvider = ({ children }) => {
         scanProgress,
         latestScanResult,
         triggerManualScan,
+        // Mockup specific real-time states
+        pumpStatus,
+        pumpLastUpdated,
+        handlePumpControl,
+        sensorData,
+        currentTime,
+        isFungicideModalOpen,
+        setIsFungicideModalOpen,
         stats: {
           totalCameras,
           onlineCameras,

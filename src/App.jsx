@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { AgricultureProvider, useAgriculture } from './context/AgricultureContext';
 import Navbar from './components/layout/Navbar';
 import SidebarNavigation from './components/layout/SidebarNavigation';
-import OverviewStats from './components/dashboard/OverviewStats';
-import WeatherWidget from './components/dashboard/WeatherWidget';
-import TaskPlanner from './components/dashboard/TaskPlanner';
+import SmartAgriDashboard from './components/dashboard/SmartAgriDashboard';
 import CameraGrid from './components/camera/CameraGrid';
 import AiVisionScanner from './components/ai/AiVisionScanner';
 import GrowthAnalytics from './components/analytics/GrowthAnalytics';
@@ -13,11 +11,11 @@ import AlertCenter from './components/alerts/AlertCenter';
 import ReportGenerator from './components/reports/ReportGenerator';
 
 function MainLayout() {
-  const { activeTab, theme } = useAgriculture();
+  const { activeTab } = useAgriculture();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className={`min-h-screen font-sans ${theme === 'dark' ? 'dark bg-emerald-950 text-emerald-50' : 'bg-emerald-50 text-emerald-950'}`}>
+    <div className="min-h-screen font-sans bg-[#F4F1EA] dark:bg-[#121E14] text-[#1C2B1E] dark:text-[#E8F0E9] selection:bg-[#3B8A42] selection:text-white antialiased">
       
       {/* Top Navbar */}
       <Navbar onMobileMenuClick={() => setMobileMenuOpen(true)} />
@@ -32,19 +30,9 @@ function MainLayout() {
         {/* Main Content Area */}
         <main className="flex-1 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 overflow-x-hidden">
           
-          {/* Dashboard Tab */}
-          {activeTab === 'dashboard' && (
-            <div className="space-y-6 animate-fadeIn">
-              <OverviewStats />
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-7">
-                  <WeatherWidget />
-                </div>
-                <div className="lg:col-span-5">
-                  <TaskPlanner />
-                </div>
-              </div>
-            </div>
+          {/* Main Smart Agriculture Dashboard (Matches User Mockup 1-to-1) */}
+          {(activeTab === 'dashboard' || activeTab === 'field_status' || activeTab === 'sensors' || activeTab === 'pump_control') && (
+            <SmartAgriDashboard />
           )}
 
           {/* Camera Grid Tab */}
@@ -62,8 +50,8 @@ function MainLayout() {
           {/* Alert Center Tab */}
           {activeTab === 'alert_center' && <AlertCenter />}
 
-          {/* Reports Tab */}
-          {activeTab === 'reports' && <ReportGenerator />}
+          {/* Reports & Logs Tab */}
+          {(activeTab === 'reports' || activeTab === 'logs') && <ReportGenerator />}
 
         </main>
       </div>

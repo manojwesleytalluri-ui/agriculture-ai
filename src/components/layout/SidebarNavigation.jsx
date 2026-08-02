@@ -2,14 +2,13 @@ import React from 'react';
 import { useAgriculture } from '../../context/AgricultureContext';
 import {
   LayoutDashboard,
-  Camera,
-  Scan,
-  TrendingUp,
-  Map,
+  Sprout,
+  Activity,
+  Power,
   AlertTriangle,
   FileText,
-  Sparkles,
-  CheckSquare
+  Settings,
+  Leaf
 } from 'lucide-react';
 
 export default function SidebarNavigation({ isOpen, onClose }) {
@@ -18,18 +17,18 @@ export default function SidebarNavigation({ isOpen, onClose }) {
   const activeAlerts = alerts.filter((a) => a.status === 'Active').length;
 
   const navItems = [
-    { id: 'dashboard', label: 'Farmer Dashboard', icon: LayoutDashboard },
-    { id: 'cameras', label: 'Field Cameras 24×7', icon: Camera, badge: '4 Live' },
-    { id: 'vision_scanner', label: 'AI Vision Inspector', icon: Scan, highlight: true },
-    { id: 'growth_analytics', label: 'Growth & Yield AI', icon: TrendingUp },
-    { id: 'map_view', label: 'Interactive Farm Map', icon: Map },
-    { id: 'alert_center', label: 'Alert Center', icon: AlertTriangle, count: activeAlerts },
-    { id: 'reports', label: 'AI Health Reports', icon: FileText }
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'field_status', label: 'Field Status', icon: Sprout },
+    { id: 'sensors', label: 'Sensors', icon: Activity },
+    { id: 'pump_control', label: 'Pump Control', icon: Power },
+    { id: 'alert_center', label: 'Alerts', icon: AlertTriangle, count: activeAlerts },
+    { id: 'reports', label: 'Logs', icon: FileText },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   return (
     <>
-      {/* Backdrop for mobile */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div
           onClick={onClose}
@@ -38,17 +37,32 @@ export default function SidebarNavigation({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-emerald-950/95 border-r border-emerald-800/40 text-emerald-100 flex flex-col justify-between transition-transform duration-300 ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#1E3A27] border-r border-[#2C5237] text-[#E8F0E9] flex flex-col justify-between transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="p-4 space-y-6">
           
-          {/* Quick AI Status banner */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-900/80 to-emerald-950 border border-emerald-700/50 shadow-inner">
+          {/* Logo Brand Header */}
+          <div className="flex items-center gap-3 px-2 py-2 border-b border-[#2C5237]">
+            <div className="w-10 h-10 rounded-2xl bg-[#3B8A42] text-white flex items-center justify-center shadow-md">
+              <Leaf className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold font-serif text-white tracking-wide">
+                Smart Agriculture
+              </h2>
+              <span className="text-[10px] text-[#D8CCA8] uppercase font-semibold">
+                AI Farm Telemetry
+              </span>
+            </div>
+          </div>
+
+          {/* Quick AI Scanner Widget */}
+          <div className="p-3.5 rounded-2xl bg-[#14261A] border border-[#2C5237] shadow-inner">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">AI Vision Engine</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#3B8A42]">Field Telemetry</span>
+              <span className="w-2 h-2 rounded-full bg-[#3B8A42] animate-ping"></span>
             </div>
 
             {isScanning ? (
@@ -65,13 +79,13 @@ export default function SidebarNavigation({ isOpen, onClose }) {
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-emerald-300/80 font-light leading-relaxed">
-                Autonomous 24×7 crop monitoring active. Next camera upload in 12 mins.
+              <p className="text-xs text-[#D8CCA8]/80 font-light leading-relaxed">
+                Autonomous 24×7 crop monitoring active. Pump ready.
               </p>
             )}
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links matching mockup */}
           <nav className="space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -83,25 +97,19 @@ export default function SidebarNavigation({ isOpen, onClose }) {
                     setActiveTab(item.id);
                     if (onClose) onClose();
                   }}
-                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-medium text-xs sm:text-sm transition-all ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-semibold text-xs sm:text-sm transition-all ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-emerald-950 font-bold shadow-md shadow-emerald-950/50'
-                      : 'hover:bg-emerald-900/60 text-emerald-200/90'
+                      ? 'bg-[#14261A] text-[#D8CCA8] border-l-4 border-[#3B8A42] font-bold shadow-md'
+                      : 'hover:bg-[#2A4C34] text-[#E8F0E9]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-950' : 'text-emerald-400'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#3B8A42]' : 'text-[#D8CCA8]'}`} />
                     <span>{item.label}</span>
                   </div>
 
-                  {item.badge && (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-900 text-emerald-300 text-[10px] font-semibold">
-                      {item.badge}
-                    </span>
-                  )}
-
                   {item.count !== undefined && item.count > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-[#B82E2B] text-white text-[10px] font-bold">
                       {item.count}
                     </span>
                   )}
@@ -113,9 +121,9 @@ export default function SidebarNavigation({ isOpen, onClose }) {
         </div>
 
         {/* Footer info */}
-        <div className="p-4 border-t border-emerald-800/40 text-center text-[11px] text-emerald-400/60">
-          <p className="font-serif">Agriculture AI Platform v4.2</p>
-          <p className="mt-0.5">Connected to 4 Field Cameras</p>
+        <div className="p-4 border-t border-[#2C5237] text-center text-[11px] text-[#D8CCA8]/70">
+          <p className="font-serif">Smart Agriculture Platform</p>
+          <p className="mt-0.5">Firebase Connected</p>
         </div>
       </aside>
     </>
