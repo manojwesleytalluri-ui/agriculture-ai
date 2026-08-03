@@ -3,6 +3,7 @@ import { useAgriculture } from '../../context/AgricultureContext';
 import FungicideGuideModal from './FungicideGuideModal';
 import SensorInputModal from './SensorInputModal';
 import ImageUploadModal from './ImageUploadModal';
+import ResponsiveGaugeCard from './ResponsiveGaugeCard';
 import { AlertTriangle, Power, Database, Monitor, ArrowRight, ShieldAlert, Cpu, Sparkles, Sliders, RotateCcw, Camera } from 'lucide-react';
 
 export default function SmartAgriDashboard() {
@@ -26,10 +27,6 @@ export default function SmartAgriDashboard() {
   const activeAlert = alerts && alerts.find((a) => a.status === 'Active');
   const alertTitle = activeAlert ? activeAlert.title : 'Leaf Spot Detected';
   const alertRec = activeAlert ? activeAlert.recommendation : 'Apply Copper Fungicide';
-
-  const moistureDash = `${Math.min(100, Math.max(0, (soilMoisture.value / 150) * 100)) * 1.2566} 125.66`;
-  const tempDash = `${Math.min(100, Math.max(0, (airTemperature.value / 150) * 100)) * 1.2566} 125.66`;
-  const humidityDash = `${Math.min(100, Math.max(0, (airHumidity.value / 100) * 100)) * 1.2566} 125.66`;
 
   const jsonText = `{\n  "PumpControl": {\n    "command": "${pumpStatus}",\n    "last_updated": "${pumpLastUpdated}",\n    "source": "Web Interface"\n  }\n}`;
 
@@ -85,144 +82,37 @@ export default function SmartAgriDashboard() {
         </div>
       </div>
 
-      {/* 2. Sensor Gauges Section (3 Uniform Cards) */}
+      {/* 2. Sensor Gauges Section (3 Perfectly Responsive Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-        
-        {/* Gauge 1: Soil Moisture */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
-          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
-            Soil Moisture
-          </h3>
+        <ResponsiveGaugeCard
+          title="Soil Moisture"
+          value={soilMoisture.value}
+          unit="%"
+          status={soilMoisture.status}
+          min={0}
+          max={150}
+          color={soilMoisture.value < 40 ? '#A83232' : '#4D8B43'}
+        />
 
-          {/* Semi-Circle SVG Gauge */}
-          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
-            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
-              <path
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                fill="none"
-                stroke="#152B18"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              {soilMoisture.value > 0 && (
-                <path
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  fill="none"
-                  stroke={soilMoisture.value < 40 ? "#A83232" : "#4D8B43"}
-                  strokeWidth="10"
-                  strokeDasharray={moistureDash}
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  className="transition-all duration-700 ease-out"
-                />
-              )}
-            </svg>
-            <div className="absolute bottom-1 text-center">
-              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
-                {soilMoisture.value}%
-              </span>
-            </div>
-          </div>
+        <ResponsiveGaugeCard
+          title="Air Temperature"
+          value={airTemperature.value}
+          unit="°C"
+          status={airTemperature.status}
+          min={0}
+          max={150}
+          color={airTemperature.value > 35 ? '#A83232' : '#38761D'}
+        />
 
-          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
-            <span className="text-gray-300">0</span>
-            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#A83232] shadow-sm">
-              {soilMoisture.status}
-            </span>
-            <span className="text-gray-300">150</span>
-          </div>
-        </div>
-
-        {/* Gauge 2: Air Temperature */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
-          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
-            Air Temperature
-          </h3>
-
-          {/* Semi-Circle SVG Gauge */}
-          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
-            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
-              <path
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                fill="none"
-                stroke="#152B18"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              {airTemperature.value > 0 && (
-                <path
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  fill="none"
-                  stroke={airTemperature.value > 35 ? "#A83232" : "#4D8B43"}
-                  strokeWidth="10"
-                  strokeDasharray={tempDash}
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  className="transition-all duration-700 ease-out"
-                />
-              )}
-            </svg>
-            <div className="absolute bottom-1 text-center">
-              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
-                {airTemperature.value}°C
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
-            <span className="text-gray-300">0</span>
-            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#38761D] shadow-sm">
-              {airTemperature.status}
-            </span>
-            <span className="text-gray-300">150</span>
-          </div>
-        </div>
-
-        {/* Gauge 3: Air Humidity */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
-          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
-            Air Humidity
-          </h3>
-
-          {/* Semi-Circle SVG Gauge */}
-          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
-            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
-              <path
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                fill="none"
-                stroke="#152B18"
-                strokeWidth="10"
-                strokeLinecap="round"
-              />
-              {airHumidity.value > 0 && (
-                <path
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  fill="none"
-                  stroke="#6E441D"
-                  strokeWidth="10"
-                  strokeDasharray={humidityDash}
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  className="transition-all duration-700 ease-out"
-                />
-              )}
-            </svg>
-            <div className="absolute bottom-1 text-center">
-              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
-                {airHumidity.value}%
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
-            <span className="text-gray-300">0</span>
-            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#6E441D] shadow-sm">
-              {airHumidity.status}
-            </span>
-            <span className="text-gray-300">100</span>
-          </div>
-        </div>
-
+        <ResponsiveGaugeCard
+          title="Air Humidity"
+          value={airHumidity.value}
+          unit="%"
+          status={airHumidity.status}
+          min={0}
+          max={100}
+          color="#6E441D"
+        />
       </div>
 
       {/* 3. Second Row: Plant Health Alert & Irrigation Pump Control */}
