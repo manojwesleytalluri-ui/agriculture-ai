@@ -37,32 +37,32 @@ export default function SidebarNavigation({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-[#1E3A27] border-r border-[#2C5237] text-[#E8F0E9] flex flex-col justify-between transition-transform duration-300 ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-56 bg-[#1E3922] border-r border-[#2A4D2E] text-[#E8F0E9] flex flex-col justify-between transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div className="p-4 space-y-6">
+        <div className="p-3 space-y-4">
           
-          {/* Logo Brand Header */}
-          <div className="flex items-center gap-3 px-2 py-2 border-b border-[#2C5237]">
-            <div className="w-10 h-10 rounded-2xl bg-[#3B8A42] text-white flex items-center justify-center shadow-md">
-              <Leaf className="w-6 h-6" />
+          {/* Brand Header */}
+          <div className="flex items-center gap-3 px-2 py-3 border-b border-[#2A4D2E]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4D8B43] to-[#274E2B] text-white flex items-center justify-center shadow-md">
+              <Leaf className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
-              <h2 className="text-base font-bold font-serif text-white tracking-wide">
+              <h2 className="text-base font-bold font-serif text-white tracking-wide leading-tight">
                 Smart Agriculture
               </h2>
-              <span className="text-[10px] text-[#D8CCA8] uppercase font-semibold">
-                AI Farm Telemetry
+              <span className="text-[10px] text-[#D5CAAD] uppercase font-semibold">
+                Telemetry Dashboard
               </span>
             </div>
           </div>
 
-          {/* Quick AI Scanner Widget */}
-          <div className="p-3.5 rounded-2xl bg-[#14261A] border border-[#2C5237] shadow-inner">
+          {/* AI Field Monitor Telemetry Widget */}
+          <div className="p-3.5 rounded-2xl bg-[#152B18] border border-[#2A4D2E] shadow-inner">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#3B8A42]">Field Telemetry</span>
-              <span className="w-2 h-2 rounded-full bg-[#3B8A42] animate-ping"></span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#4D8B43]">Field Telemetry</span>
+              <span className="w-2 h-2 rounded-full bg-[#4D8B43] animate-ping"></span>
             </div>
 
             {isScanning ? (
@@ -71,16 +71,16 @@ export default function SidebarNavigation({ isOpen, onClose }) {
                   <span className="animate-pulse">{scanProgress?.stepName || 'Scanning...'}</span>
                   <span>{scanProgress?.progressPercent || 0}%</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-emerald-950 overflow-hidden">
+                <div className="w-full h-1.5 rounded-full bg-[#1A331E] overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-emerald-400 to-green-300 transition-all duration-300"
+                    className="h-full bg-[#4D8B43] transition-all duration-300"
                     style={{ width: `${scanProgress?.progressPercent || 0}%` }}
                   ></div>
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-[#D8CCA8]/80 font-light leading-relaxed">
-                Autonomous 24×7 crop monitoring active. Pump ready.
+              <p className="text-xs text-[#D5CAAD]/80 font-light leading-relaxed">
+                Autonomous 24×7 crop telemetry active. Pump ready.
               </p>
             )}
           </div>
@@ -97,19 +97,19 @@ export default function SidebarNavigation({ isOpen, onClose }) {
                     setActiveTab(item.id);
                     if (onClose) onClose();
                   }}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-semibold text-xs sm:text-sm transition-all ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg font-semibold text-xs transition-all ${
                     isActive
-                      ? 'bg-[#14261A] text-[#D8CCA8] border-l-4 border-[#3B8A42] font-bold shadow-md'
-                      : 'hover:bg-[#2A4C34] text-[#E8F0E9]'
+                      ? 'bg-[#6E441D] text-white shadow-md font-bold'
+                      : 'hover:bg-[#274E2B] text-[#E8F0E9]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#3B8A42]' : 'text-[#D8CCA8]'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#D5CAAD]'}`} />
                     <span>{item.label}</span>
                   </div>
 
                   {item.count !== undefined && item.count > 0 && (
-                    <span className="px-2 py-0.5 rounded-full bg-[#B82E2B] text-white text-[10px] font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-[#A83232] text-white text-[10px] font-bold">
                       {item.count}
                     </span>
                   )}
@@ -121,9 +121,9 @@ export default function SidebarNavigation({ isOpen, onClose }) {
         </div>
 
         {/* Footer info */}
-        <div className="p-4 border-t border-[#2C5237] text-center text-[11px] text-[#D8CCA8]/70">
+        <div className="p-4 border-t border-[#2A4D2E] text-center text-[11px] text-[#D5CAAD]/70">
           <p className="font-serif">Smart Agriculture Platform</p>
-          <p className="mt-0.5">Firebase Connected</p>
+          <p className="mt-0.5 font-sans text-[10px] text-[#4D8B43]">Firebase Realtime Connected</p>
         </div>
       </aside>
     </>

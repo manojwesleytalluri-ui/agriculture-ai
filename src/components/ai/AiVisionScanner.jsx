@@ -13,7 +13,8 @@ import {
   Zap,
   CheckCircle2,
   Camera,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 import ComparisonSlider from './ComparisonSlider';
 import CameraRegistrationModal from '../camera/CameraRegistrationModal';
@@ -24,6 +25,7 @@ export default function AiVisionScanner() {
     cameras,
     setSelectedCameraId,
     triggerManualScan,
+    deleteCamera,
     isScanning,
     scanProgress
   } = useAgriculture();
@@ -32,7 +34,7 @@ export default function AiVisionScanner() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const hasCameras = cameras.length > 0 && selectedCamera && selectedCamera.id;
-  const analysis = selectedCamera.lastAnalysis || {};
+  const analysis = selectedCamera?.lastAnalysis || {};
   const issues = analysis.detectedIssues || [];
 
   if (!hasCameras) {
@@ -42,9 +44,9 @@ export default function AiVisionScanner() {
           <Scan className="w-8 h-8" />
         </div>
         <div>
-          <h3 className="font-serif font-bold text-lg text-white">No Field Camera Registered for AI Scan</h3>
+          <h3 className="font-serif font-bold text-lg text-white">No Field Camera or Uploaded Image Selected</h3>
           <p className="text-xs text-emerald-300/80 max-w-sm mx-auto mt-1">
-            Please register your first camera to inspect plant pathology, disease bounding boxes, and canopy heatmaps.
+            Please upload a crop image or register a camera to inspect plant pathology, disease bounding boxes, and canopy heatmaps.
           </p>
         </div>
         <button
@@ -52,7 +54,7 @@ export default function AiVisionScanner() {
           className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-emerald-950 font-bold text-xs inline-flex items-center gap-2 shadow-lg"
         >
           <Plus className="w-4 h-4" />
-          <span>Register Camera Now</span>
+          <span>Register Camera / Upload Image</span>
         </button>
 
         {showRegisterModal && <CameraRegistrationModal onClose={() => setShowRegisterModal(false)} />}
@@ -63,7 +65,7 @@ export default function AiVisionScanner() {
   return (
     <div className="space-y-6">
       
-      {/* Header & Camera Dropdown Selector */}
+      {/* Header & Camera Dropdown Selector with Delete Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center gap-2">
@@ -75,8 +77,8 @@ export default function AiVisionScanner() {
           </p>
         </div>
 
-        {/* Camera Selector & Trigger */}
-        <div className="flex items-center gap-3">
+        {/* Camera Selector & Small Delete Button */}
+        <div className="flex items-center gap-2">
           <select
             value={selectedCamera.id}
             onChange={(e) => setSelectedCameraId(e.target.value)}
@@ -88,6 +90,15 @@ export default function AiVisionScanner() {
               </option>
             ))}
           </select>
+
+          {/* Small Red Delete Button for Uploaded Image / Camera */}
+          <button
+            onClick={() => deleteCamera(selectedCamera.id)}
+            className="p-2 rounded-xl bg-[#A83232] hover:bg-[#8B2525] text-white transition-all shadow-md flex items-center justify-center shrink-0"
+            title="Delete current image"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
 
           <button
             onClick={() => triggerManualScan(selectedCamera.id)}

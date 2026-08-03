@@ -1,7 +1,9 @@
 import React from 'react';
 import { useAgriculture } from '../../context/AgricultureContext';
 import FungicideGuideModal from './FungicideGuideModal';
-import { AlertTriangle, Power, Database, Monitor, ArrowRight, ShieldAlert, Cpu } from 'lucide-react';
+import SensorInputModal from './SensorInputModal';
+import ImageUploadModal from './ImageUploadModal';
+import { AlertTriangle, Power, Database, Monitor, ArrowRight, ShieldAlert, Cpu, Sparkles, Sliders, RotateCcw, Camera } from 'lucide-react';
 
 export default function SmartAgriDashboard() {
   const {
@@ -10,72 +12,66 @@ export default function SmartAgriDashboard() {
     handlePumpControl,
     sensorData,
     currentTime,
-    setIsFungicideModalOpen
+    alerts,
+    setIsFungicideModalOpen,
+    setIsSensorInputModalOpen,
+    setIsImageUploadModalOpen,
+    isImageUploadModalOpen,
+    resetSensorDataToZero
   } = useAgriculture();
 
   const { soilMoisture, airTemperature, airHumidity } = sensorData;
+  const hasActiveAlert = alerts && alerts.some((a) => a.status === 'Active');
 
   return (
-    <div className="space-y-8 animate-fadeIn text-[#1C2B1E] dark:text-[#E8F0E9] font-sans pb-12">
+    <div className="space-y-8 animate-fadeIn font-sans pb-12 text-white">
       
-      {/* 0. Monitor Showcase Teaser Card */}
-      <div className="bg-[#FAF8F5] dark:bg-[#152317] border border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl p-6 shadow-xl overflow-hidden relative">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E3A27] text-[#D8CCA8] text-xs font-bold uppercase tracking-wider">
-              <Cpu className="w-3.5 h-3.5 text-[#3B8A42]" /> Smart Agriculture Control Hub
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#1C2B1E] dark:text-[#F0EDE6]">
-              Real-Time Field Telemetry & Irrigation
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-              Autonomous sensors, AI disease recognition, and cloud-connected pump automation for modern precision farming.
-            </p>
-          </div>
-
-          {/* Desktop Monitor Frame Mockup */}
-          <div className="w-full max-w-md bg-white dark:bg-[#1E2B20] p-3 rounded-2xl border-4 border-[#3A453C] shadow-2xl relative">
-            <div className="w-full h-3 rounded-t-xl bg-[#2A352C] flex items-center px-2 gap-1.5 mb-2">
-              <span className="w-2 h-2 rounded-full bg-red-400"></span>
-              <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
-              <span className="w-2 h-2 rounded-full bg-green-400"></span>
-            </div>
-            <div className="relative rounded-xl overflow-hidden bg-emerald-950 p-3 text-white space-y-2 text-[10px]">
-              <div className="flex justify-between items-center border-b border-emerald-800/50 pb-1">
-                <span className="font-bold text-emerald-400">Field Overview: Smart Agriculture</span>
-                <span className="text-emerald-300/70">Live Telemetry</span>
-              </div>
-              <div className="grid grid-cols-3 gap-1.5 text-center">
-                <div className="bg-emerald-900/40 p-1.5 rounded-lg border border-emerald-700/30">
-                  <p className="text-gray-400 text-[8px]">Soil Moisture</p>
-                  <p className="text-xs font-bold text-red-400">{soilMoisture.value}%</p>
-                  <p className="text-[7px] text-red-300">{soilMoisture.status}</p>
-                </div>
-                <div className="bg-emerald-900/40 p-1.5 rounded-lg border border-emerald-700/30">
-                  <p className="text-gray-400 text-[8px]">Air Temp</p>
-                  <p className="text-xs font-bold text-green-400">{airTemperature.value}°C</p>
-                  <p className="text-[7px] text-green-300">{airTemperature.status}</p>
-                </div>
-                <div className="bg-emerald-900/40 p-1.5 rounded-lg border border-emerald-700/30">
-                  <p className="text-gray-400 text-[8px]">Air Humidity</p>
-                  <p className="text-xs font-bold text-[#D8CCA8]">{airHumidity.value}%</p>
-                  <p className="text-[7px] text-amber-300">{airHumidity.status}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 1. Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#D2C9B5] dark:border-emerald-900/40">
+      {/* 1. Header Section with Compact Small Size Layout */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#2A4D2E] bg-[#1E3922] p-3.5 sm:p-4 rounded-2xl shadow-md border">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-serif tracking-tight text-[#1C2B1E] dark:text-[#F0EDE6]">
-            Field Overview: Smart Agriculture Dashboard
+          <h2 className="text-xl sm:text-2xl font-black font-serif tracking-tight text-white flex flex-wrap items-center gap-2">
+            <span className="bg-[#4D8B43] text-white px-3 py-1 rounded-xl text-xs font-sans font-black uppercase tracking-wider shadow-sm">
+              Field Overview
+            </span>
+            <span className="text-white drop-shadow font-black">
+              Smart Agriculture Dashboard
+            </span>
           </h2>
         </div>
-        <div className="text-xs font-semibold text-[#6E5031] dark:text-[#D8CCA8] bg-[#FAF8F5] dark:bg-[#1E2B20] px-4 py-2 rounded-xl border border-[#D2C9B5] dark:border-emerald-800/40 self-start sm:self-auto shadow-sm">
-          Last Updated: <span className="font-bold text-[#1C2B1E] dark:text-white">{currentTime}</span>
+
+        {/* Action Controls: Upload Crop Image, Enter Custom Sensor Data, Reset */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            onClick={() => setIsImageUploadModalOpen(true)}
+            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#4D8B43] to-emerald-600 hover:from-[#3E7335] hover:to-emerald-500 text-white font-extrabold text-[11px] uppercase tracking-wider shadow transition-all flex items-center gap-1 hover:scale-105"
+            title="Upload a crop photo from camera or file to extract AI data"
+          >
+            <Camera className="w-3.5 h-3.5 text-white" />
+            <span>Upload Image</span>
+          </button>
+
+          <button
+            onClick={() => setIsSensorInputModalOpen(true)}
+            className="px-2.5 py-1.5 rounded-lg bg-[#274E2B] hover:bg-[#346639] border border-[#3A6B3F] text-white font-extrabold text-[11px] uppercase tracking-wider shadow transition-all flex items-center gap-1 hover:scale-105"
+            title="Enter your custom sensor values"
+          >
+            <Sliders className="w-3 h-3 text-white" />
+            <span>Input Data</span>
+          </button>
+
+          <button
+            onClick={resetSensorDataToZero}
+            className="px-2.5 py-1.5 rounded-lg bg-[#A83232] hover:bg-[#8B2525] text-white font-extrabold text-[11px] uppercase tracking-wider shadow transition-all flex items-center gap-1 hover:scale-105"
+            title="Clear & Reset all sensor gauges to 0"
+          >
+            <RotateCcw className="w-3 h-3 text-white" />
+            <span>Reset (0)</span>
+          </button>
+
+          <div className="text-[11px] font-black text-white bg-[#274E2B] px-2.5 py-1.5 rounded-lg border border-[#4D8B43] shadow flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-[#85D67A]" />
+            <span><strong className="text-white font-black">{currentTime}</strong></span>
+          </div>
         </div>
       </div>
 
@@ -83,8 +79,8 @@ export default function SmartAgriDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Gauge 1: Soil Moisture */}
-        <div className="bg-white dark:bg-[#1A261C] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-lg hover:shadow-xl transition-shadow">
-          <h3 className="text-base font-bold text-[#1C2B1E] dark:text-[#F0EDE6]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
+          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Soil Moisture
           </h3>
 
@@ -95,7 +91,7 @@ export default function SmartAgriDashboard() {
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
-                stroke="#E5E0D5"
+                stroke="#152B18"
                 strokeWidth="10"
                 strokeLinecap="round"
               />
@@ -103,7 +99,7 @@ export default function SmartAgriDashboard() {
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
-                stroke="#D93829"
+                stroke="#FF4D4D"
                 strokeWidth="10"
                 strokeDasharray="125.6"
                 strokeDashoffset={125.6 * (1 - (soilMoisture.value / 100))}
@@ -112,22 +108,22 @@ export default function SmartAgriDashboard() {
               />
             </svg>
             <div className="absolute bottom-1 text-center">
-              <span className="text-2xl font-black text-[#1C2B1E] dark:text-white">
+              <span className="text-3xl font-black text-white drop-shadow">
                 {soilMoisture.value}%
               </span>
             </div>
           </div>
 
-          <div className="w-full flex justify-between text-xs text-gray-500 font-semibold px-4 pt-1">
-            <span>0</span>
-            <span className="text-[#D93829] font-bold text-sm">{soilMoisture.status}</span>
-            <span>150</span>
+          <div className="w-full flex justify-between text-xs font-bold text-white px-4 pt-1">
+            <span className="text-gray-300">0</span>
+            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#A83232] shadow-sm">{soilMoisture.status}</span>
+            <span className="text-gray-300">150</span>
           </div>
         </div>
 
         {/* Gauge 2: Air Temperature */}
-        <div className="bg-white dark:bg-[#1A261C] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-lg hover:shadow-xl transition-shadow">
-          <h3 className="text-base font-bold text-[#1C2B1E] dark:text-[#F0EDE6]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
+          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Air Temperature
           </h3>
 
@@ -138,7 +134,7 @@ export default function SmartAgriDashboard() {
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
-                stroke="#E5E0D5"
+                stroke="#152B18"
                 strokeWidth="10"
                 strokeLinecap="round"
               />
@@ -146,7 +142,7 @@ export default function SmartAgriDashboard() {
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
-                stroke="#3B8A42"
+                stroke="#4D8B43"
                 strokeWidth="10"
                 strokeDasharray="125.6"
                 strokeDashoffset={125.6 * (1 - (airTemperature.value / 50))}
@@ -155,22 +151,22 @@ export default function SmartAgriDashboard() {
               />
             </svg>
             <div className="absolute bottom-1 text-center">
-              <span className="text-2xl font-black text-[#1C2B1E] dark:text-white">
+              <span className="text-3xl font-black text-white drop-shadow">
                 {airTemperature.value}°C
               </span>
             </div>
           </div>
 
-          <div className="w-full flex justify-between text-xs text-gray-500 font-semibold px-4 pt-1">
-            <span>0</span>
-            <span className="text-[#3B8A42] font-bold text-sm">{airTemperature.status}</span>
-            <span>150</span>
+          <div className="w-full flex justify-between text-xs font-bold text-white px-4 pt-1">
+            <span className="text-gray-300">0</span>
+            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#38761D] shadow-sm">{airTemperature.status}</span>
+            <span className="text-gray-300">150</span>
           </div>
         </div>
 
         {/* Gauge 3: Air Humidity */}
-        <div className="bg-white dark:bg-[#1A261C] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-lg hover:shadow-xl transition-shadow">
-          <h3 className="text-base font-bold text-[#1C2B1E] dark:text-[#F0EDE6]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
+          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Air Humidity
           </h3>
 
@@ -183,7 +179,7 @@ export default function SmartAgriDashboard() {
                 cy="50"
                 r="38"
                 fill="none"
-                stroke="#E5E0D5"
+                stroke="#152B18"
                 strokeWidth="10"
               />
               {/* Active Ring Arc */}
@@ -192,7 +188,7 @@ export default function SmartAgriDashboard() {
                 cy="50"
                 r="38"
                 fill="none"
-                stroke="#6E5031"
+                stroke="#E68A00"
                 strokeWidth="10"
                 strokeDasharray="238.7"
                 strokeDashoffset={238.7 * (1 - (airHumidity.value / 100))}
@@ -201,14 +197,14 @@ export default function SmartAgriDashboard() {
               />
             </svg>
             <div className="absolute text-center">
-              <span className="text-2xl font-black text-[#1C2B1E] dark:text-white">
+              <span className="text-3xl font-black text-white drop-shadow">
                 {airHumidity.value}%
               </span>
             </div>
           </div>
 
           <div className="text-center pt-1">
-            <span className="text-[#6E5031] dark:text-[#D8CCA8] font-bold text-sm">{airHumidity.status}</span>
+            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#6E441D] shadow-sm">{airHumidity.status}</span>
           </div>
         </div>
 
@@ -217,67 +213,111 @@ export default function SmartAgriDashboard() {
       {/* 3. Second Row: Plant Health Alert & Irrigation Pump Control */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        {/* Left Card: Plant Health Warning */}
-        <div className="bg-white dark:bg-[#1A261C] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl overflow-hidden flex flex-col justify-between shadow-lg">
-          {/* Red Header Banner */}
-          <div className="bg-[#B82E2B] text-white py-2 px-4 text-center font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-300" />
-            <span>WARNING</span>
-          </div>
-
-          <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <h3 className="text-xl font-bold text-center text-[#1C2B1E] dark:text-[#F0EDE6] font-serif">
-              Plant Health
-            </h3>
-
-            {/* Plant Leaf Image Container */}
-            <div className="relative rounded-2xl overflow-hidden border border-[#D2C9B5] shadow-inner max-h-48 group">
-              <img
-                src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80"
-                alt="Leaf Spot Disease Detected"
-                className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-[#701C1C]/90 text-white text-center py-2 px-3 text-xs font-bold">
-                Plant Health: Leaf Spot Detected
-              </div>
-            </div>
-
-            {/* Recommendation & Guide Trigger */}
-            <div className="space-y-3 text-center pt-2">
-              <div>
-                <span className="text-xs text-gray-500 font-semibold uppercase block">Recommendation:</span>
-                <p className="text-sm font-bold text-[#1C2B1E] dark:text-white">Apply Copper Fungicide</p>
+        {/* Left Card: Plant Health Status (Dynamic Alert or All Clear) */}
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl text-white">
+          {hasActiveAlert ? (
+            <>
+              {/* Red Header Banner */}
+              <div className="bg-[#B82E2B] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-md">
+                <AlertTriangle className="w-4 h-4 text-amber-200 animate-pulse" />
+                <span>WARNING - ACTIVE ALERT</span>
               </div>
 
-              <button
-                onClick={() => setIsFungicideModalOpen(true)}
-                className="w-full py-3 px-6 rounded-2xl bg-[#8B5A2B] hover:bg-[#70461F] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
-              >
-                <ShieldAlert className="w-4 h-4" />
-                <span>View Fungicide Guide</span>
-              </button>
-            </div>
-          </div>
+              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                <h3 className="text-xl font-black text-center text-white font-serif">
+                  Plant Health Pathology
+                </h3>
+
+                {/* Plant Leaf Image Container */}
+                <div className="relative rounded-2xl overflow-hidden border-2 border-[#3A6B3F] shadow-inner max-h-48 group">
+                  <img
+                    src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80"
+                    alt="Leaf Spot Disease Detected"
+                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-[#701C1C]/95 text-white text-center py-2.5 px-3 text-xs font-black tracking-wide">
+                    Plant Health: {alerts[0]?.title || 'Leaf Spot Detected'}
+                  </div>
+                </div>
+
+                {/* Recommendation & Guide Trigger */}
+                <div className="space-y-3 text-center pt-2">
+                  <div>
+                    <span className="text-xs text-gray-300 font-bold uppercase block tracking-wider">Recommendation:</span>
+                    <p className="text-lg font-black text-white">{alerts[0]?.recommendation || 'Apply Copper Fungicide'}</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsFungicideModalOpen(true)}
+                    className="w-full py-3.5 px-6 rounded-2xl bg-[#8B5A2B] hover:bg-[#734B22] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-white" />
+                    <span>View Fungicide Guide</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Green Header Banner */}
+              <div className="bg-[#4D8B43] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-md">
+                <ShieldAlert className="w-4 h-4 text-white" />
+                <span>SYSTEM STATUS: ALL CLEAR</span>
+              </div>
+
+              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                <h3 className="text-xl font-black text-center text-white font-serif">
+                  Plant Health Overview
+                </h3>
+
+                <div className="relative rounded-2xl overflow-hidden border-2 border-[#3A6B3F] shadow-inner max-h-48 group">
+                  <img
+                    src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
+                    alt="Healthy Crop Field"
+                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-[#152B18]/95 text-[#85D67A] text-center py-2.5 px-3 text-xs font-black tracking-wide">
+                    Plant Health: Normal (No Active Alerts)
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-center pt-2">
+                  <div>
+                    <span className="text-xs text-gray-300 font-bold uppercase block tracking-wider">Status Protocol:</span>
+                    <p className="text-sm font-bold text-white">No Pathology Detected. Ready for Input.</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsImageUploadModalOpen(true)}
+                    className="w-full py-3.5 px-6 rounded-2xl bg-[#4D8B43] hover:bg-[#3E7335] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                  >
+                    <Camera className="w-4 h-4 text-white" />
+                    <span>Upload Crop Image to Scan</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Right Card: Irrigation Control */}
-        <div className="bg-white dark:bg-[#1A261C] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl overflow-hidden flex flex-col justify-between shadow-lg">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl text-white">
           {/* Dark Green Header Banner */}
-          <div className="bg-[#1E3A27] text-white py-2 px-4 text-center font-bold text-xs uppercase tracking-widest">
+          <div className="bg-[#152B18] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest shadow-md border-b border-[#2A4D2E]">
             Irrigation Control
           </div>
 
           <div className="p-6 space-y-6 flex-1 flex flex-col justify-between">
             {/* Pump Status Indicator */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#FAF8F5] dark:bg-[#142016] border border-[#D2C9B5] dark:border-emerald-800/40">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F]">
               <div>
-                <span className="text-xs text-gray-500 font-semibold uppercase block">Pump Status:</span>
-                <span className={`text-2xl font-black ${pumpStatus === 'ON' ? 'text-[#3B8A42]' : 'text-[#B82E2B]'}`}>
+                <span className="text-xs text-gray-300 font-bold uppercase block tracking-wider">Pump Status:</span>
+                <span className={`text-3xl font-black ${pumpStatus === 'ON' ? 'text-[#85D67A]' : 'text-[#FF4D4D]'}`}>
                   {pumpStatus}
                 </span>
               </div>
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-md transition-colors ${pumpStatus === 'ON' ? 'bg-[#3B8A42] text-white animate-pulse' : 'bg-[#E5E0D5] text-[#1C2B1E]'}`}>
-                <Power className="w-8 h-8" />
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-md transition-colors ${pumpStatus === 'ON' ? 'bg-[#4D8B43] text-white animate-pulse' : 'bg-[#701C1C] text-white'}`}>
+                <Power className="w-8 h-8 text-white" />
               </div>
             </div>
 
@@ -285,22 +325,22 @@ export default function SmartAgriDashboard() {
             <div className="space-y-3 pt-2">
               <button
                 onClick={() => handlePumpControl('ON')}
-                className={`w-full py-3.5 rounded-2xl font-bold text-sm uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 ${
+                className={`w-full py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 ${
                   pumpStatus === 'ON'
-                    ? 'bg-[#3B8A42] text-white ring-4 ring-[#3B8A42]/30 scale-105'
-                    : 'bg-[#3B8A42] hover:bg-[#2D7D32] text-white'
+                    ? 'bg-[#4D8B43] text-white ring-4 ring-[#4D8B43]/50 scale-105'
+                    : 'bg-[#4D8B43] hover:bg-[#3E7335] text-white'
                 }`}
               >
-                <Power className="w-4 h-4" />
+                <Power className="w-4 h-4 text-white" />
                 <span>Start Pump</span>
               </button>
 
               <button
                 onClick={() => handlePumpControl('OFF')}
-                className={`w-full py-3.5 rounded-2xl font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                className={`w-full py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
                   pumpStatus === 'OFF'
-                    ? 'bg-[#9E9E9E] text-white opacity-90'
-                    : 'bg-gray-400 hover:bg-gray-500 text-white'
+                    ? 'bg-[#A83232] text-white shadow-md'
+                    : 'bg-gray-600 hover:bg-gray-700 text-white'
                 }`}
               >
                 <span>Stop Pump</span>
@@ -312,8 +352,8 @@ export default function SmartAgriDashboard() {
       </div>
 
       {/* 4. Third Row: System Architecture Explainer ("How Pump Control Works") */}
-      <div className="bg-[#FAF8F5] dark:bg-[#162418] border-2 border-[#D2C9B5] dark:border-emerald-900/60 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-        <h3 className="text-xl font-bold text-center text-[#1C2B1E] dark:text-[#F0EDE6] font-serif">
+      <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl text-white">
+        <h3 className="text-2xl font-black text-center text-white font-serif">
           How Pump Control Works
         </h3>
 
@@ -323,35 +363,35 @@ export default function SmartAgriDashboard() {
           <div className="lg:col-span-6 flex flex-wrap items-center justify-center gap-4 text-center">
             
             {/* Step 1: Website Button */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#1E2B20] border border-[#D2C9B5] dark:border-emerald-800/40 space-y-2 w-28 flex flex-col items-center shadow-md">
-              <div className="w-10 h-10 rounded-xl bg-[#1E3A27] text-white flex items-center justify-center">
-                <Monitor className="w-5 h-5" />
+            <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-[#4D8B43] text-white flex items-center justify-center">
+                <Monitor className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[11px] font-bold text-[#1C2B1E] dark:text-white leading-tight block">
+              <span className="text-[11px] font-black text-white leading-tight block">
                 Website button
               </span>
             </div>
 
-            <ArrowRight className="w-5 h-5 text-[#8B5A2B] shrink-0 hidden sm:block" />
+            <ArrowRight className="w-5 h-5 text-[#85D67A] shrink-0 hidden sm:block" />
 
             {/* Step 2: Cloud Database */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#1E2B20] border border-[#D2C9B5] dark:border-emerald-800/40 space-y-2 w-28 flex flex-col items-center shadow-md">
+            <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
               <div className="w-10 h-10 rounded-xl bg-[#E68A00] text-white flex items-center justify-center">
-                <Database className="w-5 h-5" />
+                <Database className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[11px] font-bold text-[#1C2B1E] dark:text-white leading-tight block">
+              <span className="text-[11px] font-black text-white leading-tight block">
                 Cloud Database
               </span>
             </div>
 
-            <ArrowRight className="w-5 h-5 text-[#8B5A2B] shrink-0 hidden sm:block" />
+            <ArrowRight className="w-5 h-5 text-[#85D67A] shrink-0 hidden sm:block" />
 
             {/* Step 3: Irrigation Pump */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#1E2B20] border border-[#D2C9B5] dark:border-emerald-800/40 space-y-2 w-28 flex flex-col items-center shadow-md">
-              <div className="w-10 h-10 rounded-xl bg-[#3B8A42] text-white flex items-center justify-center">
-                <Power className="w-5 h-5" />
+            <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-[#4D8B43] text-white flex items-center justify-center">
+                <Power className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[11px] font-bold text-[#1C2B1E] dark:text-white leading-tight block">
+              <span className="text-[11px] font-black text-white leading-tight block">
                 Irrigation Pump
               </span>
             </div>
@@ -359,10 +399,10 @@ export default function SmartAgriDashboard() {
           </div>
 
           {/* Code Snippet Column: Writes to Firebase */}
-          <div className="lg:col-span-6 bg-[#1B281E] text-emerald-300 p-5 rounded-2xl border border-emerald-700/50 shadow-inner font-mono text-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-emerald-800/60 pb-2 text-[11px]">
-              <span className="text-amber-300 font-bold">Writes to Firebase (Realtime Database)</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="lg:col-span-6 bg-[#152B18] text-[#85D67A] p-5 rounded-2xl border-2 border-[#3A6B3F] shadow-inner font-mono text-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-[#2A4D2E] pb-2 text-[11px]">
+              <span className="text-white font-bold">Writes to Firebase (Realtime Database)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#85D67A] animate-ping"></span>
             </div>
 
             <pre className="text-[11px] leading-relaxed text-gray-200 overflow-x-auto">
@@ -379,8 +419,10 @@ export default function SmartAgriDashboard() {
         </div>
       </div>
 
-      {/* Render Fungicide Guide Modal */}
+      {/* Render Modals */}
       <FungicideGuideModal />
+      <SensorInputModal />
+      <ImageUploadModal isOpen={isImageUploadModalOpen} onClose={() => setIsImageUploadModalOpen(false)} />
 
     </div>
   );

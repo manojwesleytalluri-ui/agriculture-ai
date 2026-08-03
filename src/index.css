@@ -14,25 +14,25 @@
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #022c22;
-  color: #ecfdf5;
+  background-color: #eee9df;
+  color: #1c281a;
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars matching earthy green theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #022c22;
+  background: #eee9df;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #059669;
+  background: #1e3922;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #274e2b;
 }

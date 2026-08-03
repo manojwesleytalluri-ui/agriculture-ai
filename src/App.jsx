@@ -9,13 +9,14 @@ import GrowthAnalytics from './components/analytics/GrowthAnalytics';
 import FarmMapViewer from './components/maps/FarmMapViewer';
 import AlertCenter from './components/alerts/AlertCenter';
 import ReportGenerator from './components/reports/ReportGenerator';
+import FarmSettings from './components/settings/FarmSettings';
 
 function MainLayout() {
   const { activeTab } = useAgriculture();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen font-sans bg-[#F4F1EA] dark:bg-[#121E14] text-[#1C2B1E] dark:text-[#E8F0E9] selection:bg-[#3B8A42] selection:text-white antialiased">
+    <div className="min-h-screen font-sans bg-[#121E14] text-white selection:bg-[#4D8B43] selection:text-white antialiased">
       
       {/* Top Navbar */}
       <Navbar onMobileMenuClick={() => setMobileMenuOpen(true)} />
@@ -52,6 +53,9 @@ function MainLayout() {
 
           {/* Reports & Logs Tab */}
           {(activeTab === 'reports' || activeTab === 'logs') && <ReportGenerator />}
+
+          {/* Farm & Telemetry Settings Tab */}
+          {activeTab === 'settings' && <FarmSettings />}
 
         </main>
       </div>

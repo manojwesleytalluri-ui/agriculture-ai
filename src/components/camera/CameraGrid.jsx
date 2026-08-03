@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useAgriculture } from '../../context/AgricultureContext';
-import { Camera, Battery, Sun, Wifi, Sparkles, Plus, RefreshCw, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Camera, Battery, Sun, Wifi, Sparkles, Plus, RefreshCw, AlertTriangle, ShieldCheck, Trash2 } from 'lucide-react';
 import CameraRegistrationModal from './CameraRegistrationModal';
 
 export default function CameraGrid() {
-  const { cameras, selectedCameraId, setSelectedCameraId, triggerManualScan, setActiveTab, isScanning } = useAgriculture();
+  const { cameras, selectedCameraId, setSelectedCameraId, triggerManualScan, deleteCamera, setActiveTab, isScanning } = useAgriculture();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   return (
@@ -122,10 +122,18 @@ export default function CameraGrid() {
                     <button
                       onClick={() => triggerManualScan(cam.id)}
                       disabled={isScanning}
-                      className="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                      className="px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
                       <span>Scan</span>
+                    </button>
+
+                    <button
+                      onClick={() => deleteCamera(cam.id)}
+                      className="p-2 rounded-xl bg-[#A83232] hover:bg-[#8B2525] text-white transition-colors shadow"
+                      title="Delete Image Card"
+                    >
+                      <Trash2 className="w-4 h-4 text-white" />
                     </button>
                   </div>
                 </div>
