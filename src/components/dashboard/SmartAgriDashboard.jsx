@@ -23,6 +23,16 @@ export default function SmartAgriDashboard() {
   const { soilMoisture, airTemperature, airHumidity } = sensorData;
   const hasActiveAlert = alerts && alerts.some((a) => a.status === 'Active');
 
+  const activeAlert = alerts && alerts.find((a) => a.status === 'Active');
+  const alertTitle = activeAlert ? activeAlert.title : 'Leaf Spot Detected';
+  const alertRec = activeAlert ? activeAlert.recommendation : 'Apply Copper Fungicide';
+
+  const moistureDash = `${Math.min(100, Math.max(0, (soilMoisture.value / 150) * 100)) * 1.2566} 125.66`;
+  const tempDash = `${Math.min(100, Math.max(0, (airTemperature.value / 150) * 100)) * 1.2566} 125.66`;
+  const humidityDash = `${Math.min(100, Math.max(0, (airHumidity.value / 100) * 100)) * 1.2566} 125.66`;
+
+  const jsonText = `{\n  "PumpControl": {\n    "command": "${pumpStatus}",\n    "last_updated": "${pumpLastUpdated}",\n    "source": "Web Interface"\n  }\n}`;
+
   return (
     <div className="space-y-8 animate-fadeIn font-sans pb-12 text-white">
       
@@ -75,19 +85,18 @@ export default function SmartAgriDashboard() {
         </div>
       </div>
 
-      {/* 2. Sensor Gauges Section (3 Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 2. Sensor Gauges Section (3 Uniform Cards) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         
         {/* Gauge 1: Soil Moisture */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
-          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
+          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Soil Moisture
           </h3>
 
           {/* Semi-Circle SVG Gauge */}
-          <div className="relative w-44 h-24 flex items-end justify-center">
-            <svg className="w-44 h-44 overflow-visible" viewBox="0 0 100 50">
-              {/* Background Arc */}
+          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
+            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
@@ -95,42 +104,44 @@ export default function SmartAgriDashboard() {
                 strokeWidth="10"
                 strokeLinecap="round"
               />
-              {/* Active Red Arc */}
-              <path
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                fill="none"
-                stroke="#FF4D4D"
-                strokeWidth="10"
-                strokeDasharray="125.6"
-                strokeDashoffset={125.6 * (1 - (soilMoisture.value / 100))}
-                strokeLinecap="round"
-                className="transition-all duration-700 ease-out"
-              />
+              {soilMoisture.value > 0 && (
+                <path
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  fill="none"
+                  stroke={soilMoisture.value < 40 ? "#A83232" : "#4D8B43"}
+                  strokeWidth="10"
+                  strokeDasharray={moistureDash}
+                  strokeDashoffset="0"
+                  strokeLinecap="round"
+                  className="transition-all duration-700 ease-out"
+                />
+              )}
             </svg>
             <div className="absolute bottom-1 text-center">
-              <span className="text-3xl font-black text-white drop-shadow">
+              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
                 {soilMoisture.value}%
               </span>
             </div>
           </div>
 
-          <div className="w-full flex justify-between text-xs font-bold text-white px-4 pt-1">
+          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
             <span className="text-gray-300">0</span>
-            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#A83232] shadow-sm">{soilMoisture.status}</span>
+            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#A83232] shadow-sm">
+              {soilMoisture.status}
+            </span>
             <span className="text-gray-300">150</span>
           </div>
         </div>
 
         {/* Gauge 2: Air Temperature */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
-          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
+          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Air Temperature
           </h3>
 
           {/* Semi-Circle SVG Gauge */}
-          <div className="relative w-44 h-24 flex items-end justify-center">
-            <svg className="w-44 h-44 overflow-visible" viewBox="0 0 100 50">
-              {/* Background Arc */}
+          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
+            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
               <path
                 d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
@@ -138,73 +149,77 @@ export default function SmartAgriDashboard() {
                 strokeWidth="10"
                 strokeLinecap="round"
               />
-              {/* Active Green Arc */}
-              <path
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                fill="none"
-                stroke="#4D8B43"
-                strokeWidth="10"
-                strokeDasharray="125.6"
-                strokeDashoffset={125.6 * (1 - (airTemperature.value / 50))}
-                strokeLinecap="round"
-                className="transition-all duration-700 ease-out"
-              />
+              {airTemperature.value > 0 && (
+                <path
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  fill="none"
+                  stroke={airTemperature.value > 35 ? "#A83232" : "#4D8B43"}
+                  strokeWidth="10"
+                  strokeDasharray={tempDash}
+                  strokeDashoffset="0"
+                  strokeLinecap="round"
+                  className="transition-all duration-700 ease-out"
+                />
+              )}
             </svg>
             <div className="absolute bottom-1 text-center">
-              <span className="text-3xl font-black text-white drop-shadow">
+              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
                 {airTemperature.value}°C
               </span>
             </div>
           </div>
 
-          <div className="w-full flex justify-between text-xs font-bold text-white px-4 pt-1">
+          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
             <span className="text-gray-300">0</span>
-            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#38761D] shadow-sm">{airTemperature.status}</span>
+            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#38761D] shadow-sm">
+              {airTemperature.status}
+            </span>
             <span className="text-gray-300">150</span>
           </div>
         </div>
 
         {/* Gauge 3: Air Humidity */}
-        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 flex flex-col items-center justify-between space-y-4 shadow-xl text-white">
-          <h3 className="text-lg font-black text-white font-serif bg-[#274E2B] px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
+        <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-between space-y-3 sm:space-y-4 shadow-xl text-white">
+          <h3 className="text-base sm:text-lg font-black text-white font-serif bg-[#274E2B] px-3 sm:px-4 py-1.5 rounded-xl w-full text-center shadow-inner border border-[#4D8B43]">
             Air Humidity
           </h3>
 
-          {/* Circular Ring Gauge */}
-          <div className="relative w-32 h-32 flex items-center justify-center">
-            <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-              {/* Outer Ring Background */}
-              <circle
-                cx="50"
-                cy="50"
-                r="38"
+          {/* Semi-Circle SVG Gauge */}
+          <div className="relative w-36 h-20 sm:w-44 sm:h-24 flex items-end justify-center">
+            <svg className="w-36 h-36 sm:w-44 sm:h-44 overflow-visible" viewBox="0 0 100 50">
+              <path
+                d="M 10 50 A 40 40 0 0 1 90 50"
                 fill="none"
                 stroke="#152B18"
                 strokeWidth="10"
-              />
-              {/* Active Ring Arc */}
-              <circle
-                cx="50"
-                cy="50"
-                r="38"
-                fill="none"
-                stroke="#E68A00"
-                strokeWidth="10"
-                strokeDasharray="238.7"
-                strokeDashoffset={238.7 * (1 - (airHumidity.value / 100))}
                 strokeLinecap="round"
-                className="transition-all duration-700 ease-out"
               />
+              {airHumidity.value > 0 && (
+                <path
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  fill="none"
+                  stroke="#6E441D"
+                  strokeWidth="10"
+                  strokeDasharray={humidityDash}
+                  strokeDashoffset="0"
+                  strokeLinecap="round"
+                  className="transition-all duration-700 ease-out"
+                />
+              )}
             </svg>
-            <div className="absolute text-center">
-              <span className="text-3xl font-black text-white drop-shadow">
+            <div className="absolute bottom-1 text-center">
+              <span className="text-2xl sm:text-3xl font-black text-white drop-shadow">
                 {airHumidity.value}%
               </span>
             </div>
           </div>
 
-          <div className="text-center pt-1">
-            <span className="text-white font-black text-sm px-3 py-1 rounded-lg bg-[#6E441D] shadow-sm">{airHumidity.status}</span>
+          <div className="w-full flex items-center justify-between text-xs font-bold text-white px-2 sm:px-4 pt-1">
+            <span className="text-gray-300">0</span>
+            <span className="text-white font-black text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-lg bg-[#6E441D] shadow-sm">
+              {airHumidity.status}
+            </span>
+            <span className="text-gray-300">100</span>
           </div>
         </div>
 
@@ -213,11 +228,10 @@ export default function SmartAgriDashboard() {
       {/* 3. Second Row: Plant Health Alert & Irrigation Pump Control */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        {/* Left Card: Plant Health Status (Dynamic Alert or All Clear) */}
+        {/* Left Card: Plant Health Status */}
         <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl text-white">
           {hasActiveAlert ? (
-            <>
-              {/* Red Header Banner */}
+            <div className="flex flex-col justify-between h-full">
               <div className="bg-[#B82E2B] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-md">
                 <AlertTriangle className="w-4 h-4 text-amber-200 animate-pulse" />
                 <span>WARNING - ACTIVE ALERT</span>
@@ -228,7 +242,6 @@ export default function SmartAgriDashboard() {
                   Plant Health Pathology
                 </h3>
 
-                {/* Plant Leaf Image Container */}
                 <div className="relative rounded-2xl overflow-hidden border-2 border-[#3A6B3F] shadow-inner max-h-48 group">
                   <img
                     src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=800&q=80"
@@ -236,15 +249,14 @@ export default function SmartAgriDashboard() {
                     className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-[#701C1C]/95 text-white text-center py-2.5 px-3 text-xs font-black tracking-wide">
-                    Plant Health: {alerts[0]?.title || 'Leaf Spot Detected'}
+                    Plant Health: {alertTitle}
                   </div>
                 </div>
 
-                {/* Recommendation & Guide Trigger */}
                 <div className="space-y-3 text-center pt-2">
                   <div>
                     <span className="text-xs text-gray-300 font-bold uppercase block tracking-wider">Recommendation:</span>
-                    <p className="text-lg font-black text-white">{alerts[0]?.recommendation || 'Apply Copper Fungicide'}</p>
+                    <p className="text-lg font-black text-white">{alertRec}</p>
                   </div>
 
                   <button
@@ -256,10 +268,9 @@ export default function SmartAgriDashboard() {
                   </button>
                 </div>
               </div>
-            </>
+            </div>
           ) : (
-            <>
-              {/* Green Header Banner */}
+            <div className="flex flex-col justify-between h-full">
               <div className="bg-[#4D8B43] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-md">
                 <ShieldAlert className="w-4 h-4 text-white" />
                 <span>SYSTEM STATUS: ALL CLEAR</span>
@@ -296,19 +307,17 @@ export default function SmartAgriDashboard() {
                   </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
         {/* Right Card: Irrigation Control */}
         <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl overflow-hidden flex flex-col justify-between shadow-xl text-white">
-          {/* Dark Green Header Banner */}
           <div className="bg-[#152B18] text-white py-3 px-4 text-center font-black text-xs uppercase tracking-widest shadow-md border-b border-[#2A4D2E]">
             Irrigation Control
           </div>
 
           <div className="p-6 space-y-6 flex-1 flex flex-col justify-between">
-            {/* Pump Status Indicator */}
             <div className="flex items-center justify-between p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F]">
               <div>
                 <span className="text-xs text-gray-300 font-bold uppercase block tracking-wider">Pump Status:</span>
@@ -321,7 +330,6 @@ export default function SmartAgriDashboard() {
               </div>
             </div>
 
-            {/* Interactive Control Buttons */}
             <div className="space-y-3 pt-2">
               <button
                 onClick={() => handlePumpControl('ON')}
@@ -351,7 +359,7 @@ export default function SmartAgriDashboard() {
 
       </div>
 
-      {/* 4. Third Row: System Architecture Explainer ("How Pump Control Works") */}
+      {/* 4. Third Row: System Architecture Explainer */}
       <div className="bg-[#1E3922] border-2 border-[#3A6B3F] rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl text-white">
         <h3 className="text-2xl font-black text-center text-white font-serif">
           How Pump Control Works
@@ -359,10 +367,8 @@ export default function SmartAgriDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           
-          {/* Diagram Flow Columns */}
           <div className="lg:col-span-6 flex flex-wrap items-center justify-center gap-4 text-center">
             
-            {/* Step 1: Website Button */}
             <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
               <div className="w-10 h-10 rounded-xl bg-[#4D8B43] text-white flex items-center justify-center">
                 <Monitor className="w-5 h-5 text-white" />
@@ -374,7 +380,6 @@ export default function SmartAgriDashboard() {
 
             <ArrowRight className="w-5 h-5 text-[#85D67A] shrink-0 hidden sm:block" />
 
-            {/* Step 2: Cloud Database */}
             <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
               <div className="w-10 h-10 rounded-xl bg-[#E68A00] text-white flex items-center justify-center">
                 <Database className="w-5 h-5 text-white" />
@@ -386,7 +391,6 @@ export default function SmartAgriDashboard() {
 
             <ArrowRight className="w-5 h-5 text-[#85D67A] shrink-0 hidden sm:block" />
 
-            {/* Step 3: Irrigation Pump */}
             <div className="p-4 rounded-2xl bg-[#152B18] border-2 border-[#3A6B3F] space-y-2 w-28 flex flex-col items-center shadow-md">
               <div className="w-10 h-10 rounded-xl bg-[#4D8B43] text-white flex items-center justify-center">
                 <Power className="w-5 h-5 text-white" />
@@ -398,7 +402,6 @@ export default function SmartAgriDashboard() {
 
           </div>
 
-          {/* Code Snippet Column: Writes to Firebase */}
           <div className="lg:col-span-6 bg-[#152B18] text-[#85D67A] p-5 rounded-2xl border-2 border-[#3A6B3F] shadow-inner font-mono text-xs space-y-3">
             <div className="flex items-center justify-between border-b border-[#2A4D2E] pb-2 text-[11px]">
               <span className="text-white font-bold">Writes to Firebase (Realtime Database)</span>
@@ -406,13 +409,7 @@ export default function SmartAgriDashboard() {
             </div>
 
             <pre className="text-[11px] leading-relaxed text-gray-200 overflow-x-auto">
-{`{
-  "PumpControl": {
-    "command": "${pumpStatus}",
-    "last_updated": "${pumpLastUpdated}",
-    "source": "Web Interface"
-  }
-}`}
+              {jsonText}
             </pre>
           </div>
 

@@ -74,12 +74,12 @@ export default function Navbar({ onMobileMenuClick }) {
         </div>
 
         {/* Right Actions & Profile */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           
           {/* Alert Bell */}
           <button
             onClick={() => setActiveTab('alert_center')}
-            className="relative p-1.5 rounded-lg bg-[#274E2B] hover:bg-[#346639] border border-[#3A6B3F] text-white transition-colors"
+            className="relative p-1.5 rounded-lg bg-[#274E2B] hover:bg-[#346639] border border-[#3A6B3F] text-white transition-colors shrink-0"
             title="Alert Center"
           >
             <Bell className="w-4 h-4" />
@@ -95,13 +95,13 @@ export default function Navbar({ onMobileMenuClick }) {
             <select
               value={userRole}
               onChange={(e) => setUserRole(e.target.value)}
-              className="appearance-none bg-[#274E2B] hover:bg-[#346639] border border-[#3A6B3F] text-white text-[11px] font-semibold rounded-lg px-2.5 py-1 pr-6 cursor-pointer focus:outline-none"
+              className="appearance-none bg-[#274E2B] hover:bg-[#346639] border border-[#3A6B3F] text-white text-[10px] sm:text-[11px] font-semibold rounded-lg px-2 sm:px-2.5 py-1 pr-5 sm:pr-6 cursor-pointer focus:outline-none max-w-[110px] sm:max-w-none truncate"
             >
               <option value="Farmer" className="bg-[#1E3922] text-white">Farmer Mode</option>
               <option value="Agronomist" className="bg-[#1E3922] text-white">Agronomist Expert</option>
               <option value="Super Admin" className="bg-[#1E3922] text-white">Super Admin</option>
             </select>
-            <User className="w-3 h-3 text-[#D5CAAD] absolute right-2 top-2 pointer-events-none" />
+            <User className="w-3 h-3 text-[#D5CAAD] absolute right-1.5 sm:right-2 top-2 pointer-events-none" />
           </div>
 
         </div>
