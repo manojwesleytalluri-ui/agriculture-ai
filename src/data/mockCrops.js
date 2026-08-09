@@ -1,3 +1,76 @@
-export const CROP_DATABASE = [];
+// Agriculture AI — Crop Database with Ideal Conditions
 
-export const NUTRIENT_DEFICIENCIES = [];
+export const CROP_DATABASE = [
+  {
+    id: 'rice',
+    name: 'Rice',
+    icon: '🌾',
+    growthStages: ['Seedling', 'Tillering', 'Booting', 'Heading', 'Ripening'],
+    currentStage: 'Tillering',
+    daysToHarvest: 72,
+    idealConditions: { tempMin: 22, tempMax: 32, humidityMin: 60, humidityMax: 85, moistureMin: 50, moistureMax: 80 },
+    commonDiseases: ['Blast', 'Brown Spot', 'Sheath Blight'],
+    tips: 'Maintain standing water during tillering stage for optimal growth.',
+  },
+  {
+    id: 'tomato',
+    name: 'Tomato',
+    icon: '🍅',
+    growthStages: ['Seedling', 'Vegetative', 'Flowering', 'Fruiting', 'Ripening'],
+    currentStage: 'Flowering',
+    daysToHarvest: 45,
+    idealConditions: { tempMin: 18, tempMax: 30, humidityMin: 40, humidityMax: 70, moistureMin: 40, moistureMax: 65 },
+    commonDiseases: ['Early Blight', 'Late Blight', 'Septoria Leaf Spot'],
+    tips: 'Stake plants and prune suckers for better air circulation.',
+  },
+  {
+    id: 'chilli',
+    name: 'Chilli',
+    icon: '🌶️',
+    growthStages: ['Seedling', 'Vegetative', 'Flowering', 'Fruiting', 'Ripening'],
+    currentStage: 'Vegetative',
+    daysToHarvest: 90,
+    idealConditions: { tempMin: 20, tempMax: 35, humidityMin: 50, humidityMax: 70, moistureMin: 35, moistureMax: 60 },
+    commonDiseases: ['Anthracnose', 'Leaf Curl', 'Powdery Mildew'],
+    tips: 'Ensure good drainage and avoid waterlogging.',
+  },
+  {
+    id: 'cotton',
+    name: 'Cotton',
+    icon: '🏵️',
+    growthStages: ['Emergence', 'Squaring', 'Flowering', 'Boll Development', 'Maturity'],
+    currentStage: 'Squaring',
+    daysToHarvest: 120,
+    idealConditions: { tempMin: 21, tempMax: 37, humidityMin: 40, humidityMax: 65, moistureMin: 30, moistureMax: 55 },
+    commonDiseases: ['Boll Rot', 'Wilt', 'Root Rot'],
+    tips: 'Monitor for bollworm infestations during flowering.',
+  },
+  {
+    id: 'maize',
+    name: 'Maize',
+    icon: '🌽',
+    growthStages: ['Emergence', 'Vegetative', 'Tasseling', 'Silking', 'Maturity'],
+    currentStage: 'Vegetative',
+    daysToHarvest: 100,
+    idealConditions: { tempMin: 18, tempMax: 33, humidityMin: 50, humidityMax: 75, moistureMin: 40, moistureMax: 65 },
+    commonDiseases: ['Stalk Rot', 'Leaf Blight', 'Downy Mildew'],
+    tips: 'Ensure adequate nitrogen supply during vegetative growth.',
+  },
+  {
+    id: 'groundnut',
+    name: 'Groundnut',
+    icon: '🥜',
+    growthStages: ['Seedling', 'Vegetative', 'Flowering', 'Pegging', 'Maturity'],
+    currentStage: 'Flowering',
+    daysToHarvest: 80,
+    idealConditions: { tempMin: 20, tempMax: 35, humidityMin: 40, humidityMax: 65, moistureMin: 30, moistureMax: 55 },
+    commonDiseases: ['Tikka Leaf Spot', 'Collar Rot', 'Rust'],
+    tips: 'Apply calcium during pegging for better pod development.',
+  },
+];
+
+export const NUTRIENT_DEFICIENCIES = [
+  { nutrient: 'Nitrogen', symptom: 'Yellowing of older leaves', severity: 'moderate' },
+  { nutrient: 'Phosphorus', symptom: 'Purple discoloration of stems', severity: 'low' },
+  { nutrient: 'Potassium', symptom: 'Brown leaf edges', severity: 'low' },
+];
