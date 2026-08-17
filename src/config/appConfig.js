@@ -1,15 +1,15 @@
 // Agriculture AI — Application Configuration
-// Toggle DATA_SOURCE between 'DEMO' and 'LIVE' to switch modes.
+// Toggle DATA_SOURCE between 'DEMO', 'LIVE', and 'BLYNK' to switch modes.
 
 const appConfig = {
-  // Data source: 'DEMO' uses generated mock data; 'LIVE' fetches from backend API
-  DATA_SOURCE: 'DEMO',
+  // Data source: 'DEMO' uses generated mock data; 'LIVE' fetches from backend API; 'BLYNK' fetches from Blynk Cloud
+  DATA_SOURCE: 'BLYNK',
 
   // Backend API base URL (used when DATA_SOURCE = 'LIVE')
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
 
   // Sensor refresh interval in milliseconds
-  SENSOR_REFRESH_INTERVAL: 10000,
+  SENSOR_REFRESH_INTERVAL: 5000,
 
   // Chart history intervals
   TIME_RANGES: {

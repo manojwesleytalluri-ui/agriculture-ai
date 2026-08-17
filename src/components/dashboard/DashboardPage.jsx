@@ -227,7 +227,7 @@ function SensorChart() {
 
 export default function DashboardPage() {
   const { greeting, farmer, sensorReadings, previousReadings, lastUpdate, fieldHealthStatus, soilCondition,
-    sensorStatus, weather, dataSource } = useAgriculture();
+    sensorStatus, weather, dataSource, blynkStatus, pumpIsOn } = useAgriculture();
 
   return (
     <div className="space-y-5 animate-fadeIn">
@@ -239,6 +239,29 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Blynk Live Banner */}
+      {dataSource === 'BLYNK' && (
+        <div className="px-4 py-2 rounded-xl text-xs font-medium text-center flex items-center justify-center gap-2"
+          style={{
+            background: blynkStatus?.status === 'connected' ? 'var(--color-primary-50)' : 'var(--color-red-bg)',
+            color: blynkStatus?.status === 'connected' ? 'var(--color-primary)' : 'var(--color-red)',
+            border: `1px solid ${blynkStatus?.status === 'connected' ? 'var(--color-primary-200)' : 'var(--color-red)'}`,
+          }}>
+          <span className="relative flex h-2.5 w-2.5">
+            {blynkStatus?.status === 'connected' && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                style={{ background: 'var(--color-primary)' }}></span>
+            )}
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5"
+              style={{ background: blynkStatus?.status === 'connected' ? 'var(--color-primary)' : 'var(--color-red)' }}></span>
+          </span>
+          {blynkStatus?.status === 'connected'
+            ? '☁️ BLYNK CLOUD LIVE — Real-time sensor data from your IoT device'
+            : `⚠️ BLYNK CLOUD ${blynkStatus?.status?.toUpperCase() || 'CONNECTING'} — ${blynkStatus?.lastError || 'Attempting to reconnect...'}`
+          }
+        </div>
+      )}
+
       {/* Greeting */}
       <div>
         <h2 className="text-xl sm:text-2xl font-bold" style={{ color: 'var(--color-text)' }}>
@@ -247,7 +270,7 @@ export default function DashboardPage() {
         <p className="text-xs mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
           <Clock className="w-3 h-3" /> Last update: {lastUpdate.toLocaleTimeString()} •
           <Wifi className="w-3 h-3" /> {sensorStatus.online}/{sensorStatus.total} sensors online •
-          {farmer.farmName}
+          {dataSource === 'BLYNK' ? '☁️ Blynk Cloud' : farmer.farmName}
         </p>
       </div>
 
@@ -256,7 +279,8 @@ export default function DashboardPage() {
         <SummaryCard icon={fieldHealthStatus.icon} label="Field Health" value={fieldHealthStatus.label} color={fieldHealthStatus.color} />
         <SummaryCard icon={soilCondition.icon} label="Soil Condition" value={soilCondition.label} color={soilCondition.color} />
         <SummaryCard icon="📡" label="Sensor Status" value={`${sensorStatus.online}/${sensorStatus.total} Online`} color="green" />
-        <SummaryCard icon="🧠" label="AI Status" value="Monitoring" color="green" />
+        <SummaryCard icon={pumpIsOn ? '💦' : '🧠'} label={pumpIsOn ? 'Pump' : 'AI Status'}
+          value={pumpIsOn ? 'Running' : 'Monitoring'} color={pumpIsOn ? 'amber' : 'green'} />
       </div>
 
       {/* Sensor Cards */}
@@ -264,17 +288,47 @@ export default function DashboardPage() {
         <SensorCard type={SENSOR_TYPES.TEMPERATURE} current={sensorReadings.temperature?.value} previous={previousReadings.temperature?.value} />
         <SensorCard type={SENSOR_TYPES.HUMIDITY} current={sensorReadings.humidity?.value} previous={previousReadings.humidity?.value} />
         <SensorCard type={SENSOR_TYPES.SOIL_MOISTURE} current={sensorReadings.soilMoisture?.value} previous={previousReadings.soilMoisture?.value} />
-        <SensorCard type={SENSOR_TYPES.LIGHT} current={sensorReadings.light?.value} previous={previousReadings.light?.value} />
         <SensorCard type={SENSOR_TYPES.RAINFALL} current={sensorReadings.rainfall?.value} previous={previousReadings.rainfall?.value} />
+        {/* Pump Control Card */}
+        <div className="card p-4 sm:p-5 flex items-center gap-4"
+          style={{
+            borderLeft: `3px solid ${pumpIsOn ? 'var(--color-primary)' : 'var(--color-text-muted)'}`,
+          }}>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+            style={{
+              background: pumpIsOn ? 'var(--color-primary-50)' : 'var(--color-surface-raised)',
+              animation: pumpIsOn ? 'pulse 2s ease-in-out infinite' : 'none',
+            }}>
+            💦
+          </div>
+          <div>
+            <p className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>Pump Control (V5)</p>
+            <p className="text-lg font-extrabold"
+              style={{ color: pumpIsOn ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
+              {pumpIsOn ? 'ON' : 'OFF'}
+            </p>
+            <p className="text-[10px] font-medium"
+              style={{ color: pumpIsOn ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>
+              {pumpIsOn ? 'Water pump is running' : 'Water pump is idle'}
+            </p>
+          </div>
+        </div>
+        {/* Connection Status Card */}
         <div className="card p-4 sm:p-5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl animate-pulseGlow"
-            style={{ background: 'var(--color-primary-50)' }}>📡</div>
+            style={{ background: 'var(--color-primary-50)' }}>
+            {dataSource === 'BLYNK' ? '☁️' : '📡'}
+          </div>
           <div>
-            <p className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>Sensors</p>
+            <p className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
+              {dataSource === 'BLYNK' ? 'Blynk Cloud' : 'Sensors'}
+            </p>
             <p className="text-2xl font-extrabold" style={{ color: 'var(--color-primary)' }}>
               {sensorStatus.online} / {sensorStatus.total}
             </p>
-            <p className="text-[10px] font-medium" style={{ color: 'var(--color-primary)' }}>Connected</p>
+            <p className="text-[10px] font-medium" style={{ color: 'var(--color-primary)' }}>
+              {blynkStatus?.status === 'connected' ? 'Live Connected' : 'Connected'}
+            </p>
           </div>
         </div>
       </div>

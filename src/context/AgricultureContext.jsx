@@ -1,6 +1,8 @@
 // Agriculture AI — Global State Management
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+// Supports three data modes: DEMO (mock data), LIVE (backend API), and BLYNK (Blynk IoT Cloud)
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import appConfig from '../config/appConfig';
+import blynkService from '../services/blynkService';
 import { generateCurrentReadings } from '../data/mockSensors';
 import { FIELDS } from '../data/mockFields';
 import { CROP_DATABASE, NUTRIENT_DEFICIENCIES } from '../data/mockCrops';
@@ -92,6 +94,14 @@ export const AgricultureProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [sensorError, setSensorError] = useState(null);
 
+  // ── Blynk Connection Status ──
+  const [blynkStatus, setBlynkStatus] = useState({
+    status: 'disconnected',
+    lastError: null,
+    consecutiveFailures: 0,
+  });
+  const [pumpIsOn, setPumpIsOn] = useState(false);
+
   // ── Fields ──
   const [fields] = useState(FIELDS);
 
@@ -133,6 +143,85 @@ export const AgricultureProvider = ({ children }) => {
     return () => clearInterval(timer);
   }, []);
 
+  // ── Ref to hold latest sensorReadings for the Blynk callback ──
+  const sensorReadingsRef = useRef(sensorReadings);
+  useEffect(() => {
+    sensorReadingsRef.current = sensorReadings;
+  }, [sensorReadings]);
+
+  // ── Blynk Data Fetch Function ──
+  const fetchBlynkData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setSensorError(null);
+
+      const newReadings = await blynkService.readAllPins();
+
+      setPreviousReadings({ ...sensorReadingsRef.current });
+      setSensorReadings(newReadings);
+      setLastUpdate(new Date());
+
+      // Update connection status
+      const connStatus = blynkService.getConnectionStatus();
+      setBlynkStatus(connStatus);
+
+      // Update pump status
+      const pump = blynkService.getPumpStatus();
+      setPumpIsOn(pump.isOn);
+
+      // Update AI with Blynk data
+      setAiInsights(analyzeFieldConditions(newReadings));
+      setAiRecommendations(getRecommendations(newReadings));
+
+      // Check thresholds against live data
+      const newAlerts = checkThresholds(newReadings, appConfig.THRESHOLDS);
+      if (newAlerts.length > 0) {
+        setAlerts((prev) => [...newAlerts, ...prev].slice(0, 50));
+      }
+
+      // Add Blynk connected notification on first success
+      if (connStatus.status === 'connected' && connStatus.consecutiveFailures === 0) {
+        setNotifications((prev) => {
+          const hasBlynkNotif = prev.some((n) => n.id === 'blynk-connected');
+          if (hasBlynkNotif) return prev;
+          return [
+            {
+              id: 'blynk-connected',
+              message: '🟢 Blynk Cloud connected — live sensor data active.',
+              icon: '☁️',
+              time: 'Just now',
+              read: false,
+            },
+            ...prev,
+          ];
+        });
+      }
+    } catch (error) {
+      console.error('[AgricultureContext] Blynk fetch error:', error);
+      setSensorError(error.message);
+      setBlynkStatus({
+        status: 'error',
+        lastError: error.message,
+        consecutiveFailures: blynkService.getConnectionStatus().consecutiveFailures,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // ── Blynk Polling Timer ──
+  useEffect(() => {
+    if (appConfig.DATA_SOURCE !== 'BLYNK') return;
+
+    // Initial fetch
+    fetchBlynkData();
+
+    // Set up polling interval
+    const intervalId = setInterval(fetchBlynkData, appConfig.SENSOR_REFRESH_INTERVAL);
+
+    return () => clearInterval(intervalId);
+  }, []); // Only run once on mount for Blynk mode
+
   // ── Demo Data Refresh Timer ──
   useEffect(() => {
     if (appConfig.DATA_SOURCE !== 'DEMO') return;
@@ -166,7 +255,14 @@ export const AgricultureProvider = ({ children }) => {
   // ── Computed Values ──
   const unreadAlerts = alerts.filter((a) => !a.read && !a.dismissed).length;
   const unreadNotifications = notifications.filter((n) => !n.read).length;
-  const sensorStatus = { total: 6, online: 6, offline: 0 };
+
+  const sensorStatus = appConfig.DATA_SOURCE === 'BLYNK'
+    ? {
+        total: 5,
+        online: blynkStatus.status === 'connected' ? 5 : 0,
+        offline: blynkStatus.status === 'connected' ? 0 : 5,
+      }
+    : { total: 6, online: 6, offline: 0 };
 
   const fieldHealthStatus = (() => {
     const temp = sensorReadings.temperature?.value || 0;
@@ -202,6 +298,8 @@ export const AgricultureProvider = ({ children }) => {
         farmer, setFarmer,
         // Sensor data
         sensorReadings, previousReadings, lastUpdate, isLoading, sensorError,
+        // Blynk-specific
+        blynkStatus, pumpIsOn, blynkService,
         // Fields
         fields,
         // Weather
