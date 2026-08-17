@@ -4,9 +4,8 @@
 
 const blynkConfig = {
   // Blynk Cloud REST API base URL
-  // In development, use the Vite proxy to avoid CORS issues
-  // In production, use the direct Blynk Cloud URL
-  BASE_URL: import.meta.env.DEV ? '/blynk-api' : 'https://blynk.cloud/external/api',
+  // Uses /blynk-api proxy path in dev (Vite proxy) and production (Vercel rewrites) to bypass CORS
+  BASE_URL: '/blynk-api',
 
   // Device Auth Token (from Blynk Console)
   AUTH_TOKEN: 'WuYCmoMvLCzVAB070ENTSew3DjUwuYiJ',

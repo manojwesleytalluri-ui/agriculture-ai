@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/blynk-api/:path*",
+      "destination": "https://blynk.cloud/external/api/:path*"
+    }
+  ]
+}
